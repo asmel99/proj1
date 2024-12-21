@@ -1,0 +1,117 @@
+PARSER_BEGIN(FrenchParserExtended)
+
+public class FrenchParserExtended {
+    public static void main(String[] args) throws ParseException {
+        System.out.println("Entrez une phrase :");
+        try {
+            FrenchParserExtended.parse();
+            System.out.println("Phrase valide.");
+        } catch (ParseException e) {
+            System.out.println("Phrase invalide.");
+            System.out.println(e.getMessage());
+        }
+    }
+}
+
+PARSER_END(FrenchParserExtended)
+
+/* Définition des tokens */
+TOKEN : {
+    <ARTICLE : "le" | "la" | "les" | "une" | "un" | "des">
+}
+TOKEN : {
+    <PRONOM : "je" | "tu" | "il" | "elle" | "nous" | "vous" | "ils" | "elles">
+}
+TOKEN : {
+    <VERBE : "charge" | "chargent" | "sonne" | "sonnent" | "parle" | "parlent">
+}
+TOKEN : {
+    <NOM : "téléphone" | "souris" | "fromage" | "ami" | "matin">
+}
+TOKEN : {
+    <ADVERBE : "chaque matin" | "souvent" | "toujours" | "ce soir">
+}
+TOKEN : {
+    <COMPLEMENT_TEMPS : "à 6 heures" | "dans la cuisine" | "avec mon téléphone">
+}
+TOKEN : {
+    <SPACE : (" " | "\\t" | "\\n" | "\\r")> // Ignore les espaces blancs
+}
+
+/* Ignorer les espaces */
+SKIP : {
+    <SPACE>
+}
+
+/* Définition des règles de la grammaire */
+void parse() :
+{}
+{
+    (phrase() | phrase_complexe()) <EOF>
+}
+
+void phrase() :
+{}
+{
+    sujet() verbe() complement_direct()
+}
+
+void phrase_complexe() :
+{}
+{
+    (adverbe() | complement_temps())? sujet() verbe() (complement_direct() complement_indirect()?)?
+}
+
+void sujet() :
+{}
+{
+    (article() nom() | pronom())
+}
+
+void complement_direct() :
+{}
+{
+    article() nom()
+}
+
+void complement_indirect() :
+{}
+{
+    complement_temps()
+}
+
+void verbe() :
+{}
+{
+    <VERBE>
+}
+
+void article() :
+{}
+{
+    <ARTICLE>
+}
+
+void nom() :
+{}
+{
+    <NOM>
+}
+
+void pronom() :
+{}
+{
+    <PRONOM>
+}
+
+void adverbe() :
+{}
+{
+    <ADVERBE>
+}
+
+void complement_temps() :
+{}
+{
+    <COMPLEMENT_TEMPS>
+}
